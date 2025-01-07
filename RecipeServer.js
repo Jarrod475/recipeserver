@@ -6,6 +6,8 @@ import { OAuth2Client }  from "google-auth-library";
 //for the database stuff
 import pg from "pg";
 
+var currentUser = "";
+
 //connecting to the Postgres database...
 const db = new pg.Client({
     user: "postgres",
@@ -64,7 +66,7 @@ const verifyToken = async (req, res, next) => {
           name: payload.name,
         };
        
-
+        currentUser = req.user.email;
 
         next(); 
     } catch (error) {
@@ -74,10 +76,14 @@ const verifyToken = async (req, res, next) => {
 
 
       // request to verify user.
-      app.post('/auth', verifyToken, (req,res) => {
-        // ------------------------CONTINUE FROM HERE!!!  ---------------------------------- 
-        res.json({message: `welcome ${req.user.name}`});
-        registerUser(req.user.email,req.user.name);
+      app.post('/auth', verifyToken, (req,res) => { 
+        res.json({success: true});
+        //registerUser(req.user.email,req.user.name);
+      });
+
+      app.get('/recipes', (req,res)=>{
+        res.json({recipes : ["bread", "curry", "ice-cream"]});
+        console.log("current user is :" ,currentUser);
       });
 
       //start the app!
