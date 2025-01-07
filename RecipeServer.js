@@ -19,10 +19,20 @@ const db = new pg.Client({
   db.connect();
 
   async function registerUser(email, name){
-    await db.query('INSERT INTO users (email,name) VALUES ($1,$2)',[email,name]);
-    console.log("user registered!!!");
+    const data = (await db.query('SELECT COUNT(1) FROM users WHERE email = $1',[email])).rows[0];
+    if (data.count == 0){
+      await db.query('INSERT INTO users (email,name) VALUES ($1,$2)',[email,name]);
+      console.log("user registered : ", name);
+    }else{
+      console.log("user logged in : ", name);
+    }
+    currentUser = email;
   }
 
+  async function getRecipes(){
+    const data = await  db.query("SELECT recipe_name,recipe_ingredients,recipe_instructions FROM recipe_list WHERE owner_email = $1",[currentUser]);
+    return data.rows;
+  }
 
 const app = express();
 const PORT = 5000;
@@ -65,8 +75,6 @@ const verifyToken = async (req, res, next) => {
           email: payload.email,
           name: payload.name,
         };
-       
-        currentUser = req.user.email;
 
         next(); 
     } catch (error) {
@@ -77,13 +85,13 @@ const verifyToken = async (req, res, next) => {
 
       // request to verify user.
       app.post('/auth', verifyToken, (req,res) => { 
+        registerUser(req.user.email,req.user.name);
         res.json({success: true});
-        //registerUser(req.user.email,req.user.name);
+        
       });
-
-      app.get('/recipes', (req,res)=>{
-        res.json({recipes : ["bread", "curry", "ice-cream"]});
-        console.log("current user is :" ,currentUser);
+      //handles the recipes route, returning all the recipes of the current user.
+      app.get('/recipes',async(req,res)=>{
+        res.json({recipes : await getRecipes()});
       });
 
       //start the app!
