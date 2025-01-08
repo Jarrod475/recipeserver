@@ -30,7 +30,8 @@ const db = new pg.Client({
   }
 
   async function getRecipes(){
-    const data = await  db.query("SELECT recipe_name,recipe_ingredients,recipe_instructions FROM recipe_list WHERE owner_email = $1",[currentUser]);
+    const data = await  db.query("SELECT id , name,ingredients, instructions FROM recipe_list WHERE owner_email = $1",[currentUser]);
+    console.log(data.rows);
     return data.rows;
   }
 
