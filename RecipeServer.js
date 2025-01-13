@@ -41,7 +41,7 @@ const CLIENT_ID = "1022244509768-97geajdtudjrotncr2urjmrdeuuqkmkv.apps.googleuse
 const client = new OAuth2Client(CLIENT_ID);
 const corsOptions = {
     origin: 'http://localhost:3000', // Allow requests from this origin
-    methods: ['GET', 'POST'], // Specify allowed HTTP methods
+    methods: ['GET', 'POST','DELETE'], // Specify allowed HTTP methods
     allowedHeaders: ['Content-Type','Authorization','token'], // Allow these headers in requests
   };
 
@@ -103,6 +103,12 @@ const verifyToken = async (req, res, next) => {
         res.send({message : "successfully added new recipe"})
         console.log("recipe added successfully to owner : ", currentUser);
       });
+
+      app.delete('/delete',async(req,res)=>{
+        await db.query('DELETE FROM recipe_list WHERE id = $1', [req.body.recipeID]);
+        res.send({message: "recipe Successfully deleted..."});
+      });
+
 
       //start the app!
       app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
