@@ -45,6 +45,7 @@ const corsOptions = {
     allowedHeaders: ['Content-Type','Authorization','token'], // Allow these headers in requests
   };
 
+app.use(express.json());
 app.use(cors(corsOptions));
 
 
@@ -91,8 +92,16 @@ const verifyToken = async (req, res, next) => {
         
       });
       //handles the recipes route, returning all the recipes of the current user.
-      app.get('/recipes',async(req,res)=>{
-        res.json({recipes : await getRecipes()});
+      app.get('/recipes',async(req,res)=>{ 
+       res.json({recipes : await getRecipes()});
+       console.log('recipes are now :', await getRecipes());  
+      });
+
+      //handles the new recipes added by the user.
+      app.post('/add',async(req,res)=>{
+        await db.query('INSERT INTO recipe_list (name, instructions,ingredients,owner_email) VALUES ($1,$2,$3,$4)', [req.body.Name,req.body.Instructions,req.body.Ingredients,currentUser]);
+        res.send({message : "successfully added new recipe"})
+        console.log("recipe added successfully to owner : ", currentUser);
       });
 
       //start the app!
