@@ -104,6 +104,14 @@ const verifyToken = async (req, res, next) => {
         console.log("recipe added successfully to owner : ", currentUser);
       });
 
+      //handles the changed recipes
+      app.post('/edit',async(req,res)=>{  
+        console.log("data is : ", req.body.data.recipe , req.body.data.recipeID)
+        await db.query('UPDATE recipe_list SET  name = $1 , instructions = $2 ,ingredients = $3 WHERE id = $4', [req.body.data.recipe.Name,req.body.data.recipe.Instructions,req.body.data.recipe.Ingredients,req.body.data.recipeID  ]);
+        res.send({message : "successfully added new recipe"})
+        console.log("recipe added successfully to owner : ", currentUser);
+      });
+
       app.delete('/delete',async(req,res)=>{
         await db.query('DELETE FROM recipe_list WHERE id = $1', [req.body.recipeID]);
         res.send({message: "recipe Successfully deleted..."});
