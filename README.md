@@ -17,7 +17,7 @@ RecipeBook is a simple application for managing and organizing your favorite rec
 
 - How to use basic Oauth.
 - Verifying user logins.
-- sending and recieving info front client to server.
+- sending and recieving info from client to server.
 - Setting up a Google Oauth account and accessing the Google API.
 
 ## License
